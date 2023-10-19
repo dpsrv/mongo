@@ -7,7 +7,7 @@ services:
       - '27017:27017'
     volumes:
       - ${DPSRV_HOME}/rc/secrets/mongo/conf/:/etc/mongo/
-      - mongo:/data/db/
+      - db:/data/db/
       - /etc/localtime:/etc/localtime:ro
     restart: unless-stopped
 networks:
@@ -15,4 +15,4 @@ networks:
     name: dpsrv
     external: true
 volumes:
-  mongo:
+  db:
