@@ -4,7 +4,7 @@ services:
     image: mongo:latest
     env_file: ${DPSRV_HOME}/rc/secrets/mongo/mongo.env
     ports:
-      - '27017:27017'
+      - '50017:27017'
     volumes:
       - ${DPSRV_HOME}/rc/secrets/mongo/conf/:/etc/mongo/
       - db:/data/db/
