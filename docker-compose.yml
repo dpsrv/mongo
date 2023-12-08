@@ -1,8 +1,11 @@
 services:
   mongo:
+    build: .
     container_name: dpsrv-mongo
-    image: mongo:latest
-    env_file: ${DPSRV_HOME}/rc/secrets/mongo/mongo.env
+    image: dpsrv/mongo
+    env_file:
+      - ${DPSRV_HOME}/rc/secrets/mongo/mongo.env
+      - ${DPSRV_HOME}/local.env
     ports:
       - '50017:27017'
     volumes:
