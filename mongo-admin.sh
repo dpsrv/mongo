@@ -12,5 +12,5 @@ if [ -z "$MONGO_INITDB_ROOT_PASSWORD" ] && [ -f "$MONGO_INITDB_ROOT_PASSWORD_FIL
 fi
 
 admin_uri="mongodb://$MONGO_INITDB_ROOT_USERNAME:$MONGO_INITDB_ROOT_PASSWORD@localhost:27017/admin"
-docker exec -it mongo mongosh "$admin_uri" 
+docker exec -it dpsrv-mongo mongosh "$admin_uri" 
 

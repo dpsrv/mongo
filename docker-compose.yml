@@ -9,6 +9,7 @@ services:
       - ${DPSRV_HOME}/rc/secrets/mongo/conf/:/etc/mongo/
       - db:/data/db/
       - /etc/localtime:/etc/localtime:ro
+    command: '--config /etc/mongo/mongod.conf'
     restart: unless-stopped
 networks:
   default:
