@@ -11,8 +11,8 @@ services:
     volumes:
       - ${DPSRV_HOME}/rc/secrets/mongo/conf/:/etc/mongo/
       - db:/data/db/
+      - ${DPSRV_HOME}/rc/secrets/letsencrypt/:/etc/letsencrypt/:ro
       - /etc/localtime:/etc/localtime:ro
-    command: '--config /etc/mongo/mongod.conf'
     restart: unless-stopped
 networks:
   default:
