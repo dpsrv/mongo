@@ -6,6 +6,11 @@ SWD=$( cd $(dirname $0); pwd )
 
 echo main
 
+
+conf=$( mongo --quiet --eval 'EJSON.stringify(rs.conf())' )
+echo "$conf"
+
+exit
 mongo --quiet --eval 'rs.initiate(
    {
       _id: "dpsrv",
@@ -15,5 +20,4 @@ mongo --quiet --eval 'rs.initiate(
    }
 )' 
 
-# mongo --quiet --eval 'rs.conf()' 
 
