@@ -6,7 +6,7 @@ SWD=$( cd $(dirname $0); pwd )
 
 echo main
 
-mongo --quiet --eval 'rs.initialize(
+mongo --quiet --eval 'rs.initiate(
    {
       _id: "dpsrv",
       members: [

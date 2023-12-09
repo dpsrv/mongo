@@ -21,5 +21,5 @@ while [ 1 ]; do
 
 	TTL=$( dig +nocmd +noall +answer +ttlid -t cname $main | awk '{ print $2 }' )
 	sleep $TTL
-done
+done 
 
