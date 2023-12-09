@@ -10,7 +10,6 @@ services:
       - '50017:27017'
     volumes:
       - ${DPSRV_HOME}/rc/secrets/mongo/conf/:/etc/mongo/
-      - ${DPSRV_HOME}/rc/secrets/common/cert.pem:/etc/mongo/cert.pem
       - db:/data/db/
       - /etc/localtime:/etc/localtime:ro
     command: '--config /etc/mongo/mongod.conf'
