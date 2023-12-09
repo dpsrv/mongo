@@ -1,5 +1,5 @@
 #!/bin/bash -ex
 
-/usr/local/bin/update-certs.sh 
+/opt/update-certs.sh 
 
-exec mongod --config /etc/mongo/mongod.conf
+exec /usr/local/bin/docker-entrypoint.sh mongod --config /etc/mongo/mongod.conf
