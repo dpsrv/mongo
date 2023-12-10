@@ -14,8 +14,8 @@ if [ -z $host ]; then
 	exit 1
 fi
 
-conf=$( echo "$conf" | jq '(.members[] | select(.host != "$node:27017")).priority |= 0' )
-conf=$( echo "$conf" | jq '(.members[] | select(.host == "$node:27017")).priority |= 1' )
+conf=$( echo "$conf" | jq '(.members[] | select(.host != "'"$node:27017"'")).priority |= 0' )
+conf=$( echo "$conf" | jq '(.members[] | select(.host == "'"$node:27017"'")).priority |= 1' )
 
 mongo-local --quiet --eval 'rs.reconfig('"$conf"')'
 
