@@ -6,3 +6,4 @@ SWD=$( cd $(dirname $0); pwd )
 
 echo replica
 
+mongo-admin --quiet --eval 'rs.add( { host: "'$DPSRV_REGION-$DPSRV_NODE.$DPSRV_DOMAIN:27017'" } )'
