@@ -20,6 +20,12 @@ fi
 
 function mongo() {
 	local host=$1
+	if [ -z $host ]; then
+		echo "Usage: $FUNCNAME <hostname>"
+		echo " e.g.: $FUNCNAME localhost"
+		return 
+	fi
+	shift
 	uri="mongodb://$MONGO_INITDB_ROOT_USERNAME:$MONGO_INITDB_ROOT_PASSWORD@$host:27017/admin?tls=true&tlsInsecure=true&tlsCertificateKeyFile=/etc/mongo/cert.pem"
 	mongosh "$uri" "$@"
 }
