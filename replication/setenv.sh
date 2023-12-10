@@ -21,7 +21,7 @@ fi
 function mongo() {
 	local host=$1
 	uri="mongodb://$MONGO_INITDB_ROOT_USERNAME:$MONGO_INITDB_ROOT_PASSWORD@$host:27017/admin?tls=true&tlsInsecure=true&tlsCertificateKeyFile=/etc/mongo/cert.pem"
-	mongosh "$MONGO_LOCAL_URI" "$@"
+	mongosh "$uri" "$@"
 }
 
 function mongo-local() {
