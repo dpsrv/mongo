@@ -7,4 +7,4 @@ SWD=$( cd $(dirname $0); pwd )
 echo replica
 
 conf=$( mongo-main --quiet --eval 'EJSON.stringify(rs.conf())' )
-echo "$conf" | jq '.members[] | select(.host == "'$DPSRV_REGION-$DPSRV_NODE.$DPSRV_DOMAIN:27017'").host' || mongo-admin --quiet --eval 'rs.add( { host: "'$DPSRV_REGION-$DPSRV_NODE.$DPSRV_DOMAIN:27017'" } )'
+echo "$conf" | jq -r '.members[] | select(.host == "'$node:27017'").host' || mongo-admin --quiet --eval 'rs.add( { host: "'$node:27017'" } )'

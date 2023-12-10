@@ -4,13 +4,16 @@ SWD=$( cd $(dirname $0); pwd )
 
 . $SWD/setenv.sh
 
-echo main
-
 conf=$( mongo-local --quiet --eval 'EJSON.stringify(rs.conf())' || true )
-if [ -z $conf ]; then
+echo "rs.conf: $conf"
+
+host=$( echo "$conf" | jq -r '.members[] | select(.host == "'$node:27017'").host' )
+
+if [ -z $host ]; then
 	mongo-local --quiet --eval 'rs.initiate({
-		_id: "dpsrv", members: [ { _id: 0, host: "'$DPSRV_REGION-$DPSRV_NODE.$DPSRV_DOMAIN:27017'" } ]
+		_id: "dpsrv", members: [ { _id: 0, host: "'$node:27017'" } ]
 	})' 
+	exit 1
 fi
 
-echo $conf
+echo "main node $host"
