@@ -4,6 +4,10 @@ SWD=$( cd $(dirname $0); pwd )
 
 . $SWD/setenv.sh
 
+if [ $DPSRV_MONGO_NODE != true ]; then
+	$SWD/offline.sh 2>&1 | xargs echo "$(date +%Y-%m-%d\ %H:%M:%S)"
+fi
+
 while true; do
 	host $main | grep -v NXDOMAIN | sort > /tmp/replication.host 2>/dev/null
 
