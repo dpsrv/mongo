@@ -5,7 +5,7 @@ services:
     image: dpsrv/mongo
     env_file:
       - ${DPSRV_HOME}/rc/secrets/mongo/mongo.env
-      - ${DPSRV_HOME}/local.env
+      - ${DPSRV_HOME}/rc/secrets/local/${HOSTNAME}/local.env
     ports:
       - '50017:27017'
     volumes:
