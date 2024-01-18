@@ -4,6 +4,6 @@
 
 /opt/replication/replication.sh &
 
-chmod og-rwx /etc/mongo/*
+chown -R mongodb:mongodb /etc/mongo/*
 
 exec /usr/local/bin/docker-entrypoint.sh mongod --config /etc/mongo/mongod.conf
