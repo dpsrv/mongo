@@ -1,8 +1,8 @@
 services:
   dpsrv-mongo:
     build: .
-    container_name: dpsrv-mongo
-    image: dpsrv/mongo
+    container_name: dpsrv-mongo-${tag:-latest}
+    image: dpsrv/mongo:${tag:-latest}
     env_file:
       - ${DPSRV_HOME}/rc/secrets/mongo/mongo.env
       - ${DPSRV_HOME}/rc/secrets/local/${HOSTNAME}/local.env
