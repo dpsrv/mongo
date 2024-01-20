@@ -16,6 +16,7 @@ fi
 
 conf=$( echo "$conf" | jq '(.members[] | select(.host != "'"$node:27017"'")).priority |= 0' )
 conf=$( echo "$conf" | jq '(.members[] | select(.host == "'"$node:27017"'")).priority |= 1' )
+conf=$( echo "$conf" | jq -c . | sed 's/{"$oid":"\([^"]*\)"}/ObjectId("\1")/g' )
 
 mongo-local --quiet --eval 'rs.reconfig('"$conf"')'
 
