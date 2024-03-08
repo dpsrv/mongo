@@ -11,7 +11,7 @@ services:
       - '27017/tcp'
     volumes:
       - ${DPSRV_HOME}/rc/secrets/mongo/conf/:/etc/mongo/
-      - db:/data/db/
+      - ${DPSRV_HOME}/srv/mongo:/data/db/
       - ${DPSRV_HOME}/rc/secrets/letsencrypt/:/etc/letsencrypt/:ro
       - /etc/localtime:/etc/localtime:ro
     restart: unless-stopped
