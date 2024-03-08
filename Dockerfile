@@ -1,4 +1,4 @@
-FROM mongo:4.4.28
+FROM mongo:7.0.6
 
 RUN apt update \
 	&& apt install -y dnsutils vim \
