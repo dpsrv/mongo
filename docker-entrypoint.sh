@@ -1,5 +1,9 @@
 #!/bin/bash -ex
 
+if [ -n "$*" ]; then
+	exec "$@"
+fi
+
 /opt/update-certs.sh 
 
 /opt/replication/replication.sh &

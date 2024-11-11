@@ -3,6 +3,7 @@ services:
     container_name: dpsrv-mongo-${tag:-latest}
     image: dpsrv/mongo:${tag:-latest}
     build: .
+    user: 1000:1000
     hostname: $HOSTNAME.dpsrv.me
     env_file:
       - ${DPSRV_HOME}/rc/secrets/mongo/mongo.env

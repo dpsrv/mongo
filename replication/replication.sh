@@ -12,7 +12,7 @@ fi
 
 while true; do
 	if [ -f /tmp/replication.offline ]; then
-		$SWD/offline.sh 2>&1 | xargs echo "$(date +%Y-%m-%d\ %H:%M:%S)"
+		$SWD/offline.sh 2>&1 | while read line; do echo "$(date +%Y-%m-%d\ %H:%M:%S) $line"; done
 		sleep 60
 		continue
 	fi
@@ -25,9 +25,9 @@ while true; do
 
 	unset complete
 	if grep -q $node /tmp/replication.host; then
-		$SWD/main.sh && complete=true 2>&1 | xargs echo "$(date +%Y-%m-%d\ %H:%M:%S)"
+		$SWD/main.sh && complete=true 2>&1 | while read line; do echo "$(date +%Y-%m-%d\ %H:%M:%S) $line"; done
 	else
-		$SWD/replica.sh && complete=true 2>&1 | xargs echo "$(date +%Y-%m-%d\ %H:%M:%S)"
+		$SWD/replica.sh && complete=true 2>&1 | while read line; do echo "$(date +%Y-%m-%d\ %H:%M:%S) $line"; done
 	fi
 
 	if [ "$complete" = "true" ]; then
