@@ -8,12 +8,13 @@ cat $files > /etc/mongo/cert.pem
 last=$( ls -1t $files | head -1 | xargs date +%s -r )
 
 while true; do
-	latest=$( ls -1t $files | head -1 | xargs date +%s -r )
 	sleep 60
 
 	if [ $latest -gt $last ]; then
 		last=$latest
-		mongo-local --eval 'db.rotateCertificates();'
+		if mongo-local --eval 'db.rotateCertificates()'; then
+			latest=$( ls -1t $files | head -1 | xargs date +%s -r )
+		fi
 	fi
 
 done &
