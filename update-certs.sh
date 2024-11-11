@@ -1,4 +1,4 @@
-#!/bin/bash -e
+#!/bin/bash -ex
 
 . /opt/replication/setenv.sh
 
@@ -10,11 +10,11 @@ last=$( ls -1t $files | head -1 | xargs date +%s -r )
 while true; do
 	sleep 60
 
+	latest=$( ls -1t $files | head -1 | xargs date +%s -r )
+
 	if [ $latest -gt $last ]; then
-		last=$latest
 		if mongo-local --eval 'db.rotateCertificates()'; then
-			latest=$( ls -1t $files | head -1 | xargs date +%s -r )
+			last=$latest
 		fi
 	fi
-
 done &
