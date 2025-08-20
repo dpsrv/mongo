@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
         - name: mongodb
-          image: mongo:7.0
+          image: maxfortun/private:mongodb-8
           #command: ["mongod", "--config", "/etc/mongo/mongod.conf"]
           command: ["sleep", "infinity"]
           ports:
@@ -36,26 +36,38 @@ spec:
           volumeMounts:
             - name: mongodb-data
               mountPath: /data/db
-            - name: mongo-conf-mongod
+            - name: mongo-conf-mongod-conf
               mountPath: /etc/mongo/mongod.conf
               subPath: mongod.conf
-            - name: mongo-conf-cert
-              mountPath: /etc/mongo/cert.pem
-              subPath: cert.pem
-            - name: mongo-conf-key
+            - name: mongo-conf-dpsrv-key
               mountPath: /etc/mongo/dpsrv.key
               subPath: dpsrv.key
+            - name: letsencrypt-live-domain-cert-pem
+              mountPath: /etc/letsencrypt/live/domain/cert.pem
+              subPath: cert.pem
+            - name: letsencrypt-live-domain-privkey-pem
+              mountPath: /etc/letsencrypt/live/domain/privkey.pem
+              subPath: privkey.pem
+      imagePullSecrets:
+        - name: dockerhub-dpsrv
       volumes:
         - name: mongodb-data
           hostPath:
             path: /mnt/mongodb
             type: DirectoryOrCreate
-        - name: mongo-conf-mongod
+        - name: mongo-conf-mongod-conf
           secret:
             secretName: mongo-conf-mongod.conf
-        - name: mongo-conf-cert
-          secret:
-            secretName: mongo-conf-cert.pem
-        - name: mongo-conf-key
+            defaultMode: 0400 
+        - name: mongo-conf-dpsrv-key
           secret:
             secretName: mongo-conf-dpsrv.key
+            defaultMode: 0400 
+        - name: letsencrypt-live-domain-cert-pem
+          secret:
+            secretName: letsencrypt-live-domain-cert.pem
+            defaultMode: 0400 
+        - name: letsencrypt-live-domain-privkey-pem
+          secret:
+            secretName: letsencrypt-live-domain-privkey.pem
+            defaultMode: 0400 
