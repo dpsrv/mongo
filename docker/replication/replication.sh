@@ -4,10 +4,8 @@ SWD=$( cd $(dirname $0); pwd )
 
 . $SWD/setenv.sh
 
-if [ $DPSRV_MONGO_NODE != true ]; then
-	touch /tmp/replication.offline
-else
-	rm -f /tmp/replication.offline || true
+if [ -z "$DPSRV_MONGO_CLUSTER" ]; then
+	exit
 fi
 
 while true; do

@@ -4,11 +4,12 @@ if [ -n "$*" ]; then
 	exec "$@"
 fi
 
+cp -R /etc/mongo.init /etc/mongo
+chown -R mongodb:mongodb /etc/mongo/*
+chmod -R u=r,og= /etc/mongo/*
+
 /opt/update-certs.sh 
 
 /opt/replication/replication.sh &
-
-chown -R mongodb:mongodb /etc/mongo/*
-chmod og-rwx /etc/mongo/dpsrv.key
 
 exec /usr/local/bin/docker-entrypoint.sh mongod --config /etc/mongo/mongod.conf

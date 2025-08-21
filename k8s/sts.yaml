@@ -22,6 +22,9 @@ spec:
           ports:
             - containerPort: 27017
               name: mongodb
+          envFrom:
+            - configMapRef:
+                name: dpsrv
           env:
             - name: MONGO_INITDB_ROOT_USERNAME
               valueFrom:
@@ -37,10 +40,10 @@ spec:
             - name: mongodb-data
               mountPath: /data/db
             - name: mongo-conf-mongod-conf
-              mountPath: /etc/mongo/mongod.conf
+              mountPath: /etc/mongo.init/mongod.conf
               subPath: mongod.conf
             - name: mongo-conf-dpsrv-key
-              mountPath: /etc/mongo/dpsrv.key
+              mountPath: /etc/mongo.init/dpsrv.key
               subPath: dpsrv.key
             - name: letsencrypt-live-domain-cert-pem
               mountPath: /etc/letsencrypt/live/domain/cert.pem
@@ -50,6 +53,10 @@ spec:
               subPath: privkey.pem
       imagePullSecrets:
         - name: dockerhub-dpsrv
+      securityContext:
+        #runAsUser: 999
+        #runAsGroup: 999
+        #fsGroup: 999
       volumes:
         - name: mongodb-data
           hostPath:

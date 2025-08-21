@@ -3,7 +3,7 @@ if [ -z $DPSRV_DOMAIN ]; then
 	. <( cat /proc/1/environ | tr '\0' '\n' )
 fi
 
-main=mongo-main.$DPSRV_DOMAIN
+main=$DPSRV_MONGO_CLUSTER.$DPSRV_DOMAIN
 node=${DPSRV_REGION}-${DPSRV_NODE}.$DPSRV_DOMAIN
 
 MONGO_INITDB_ROOT_USERNAME_FILE=/etc/mongo/admin-username
@@ -35,6 +35,6 @@ function mongo-local() {
 }
 
 function mongo-main() {
-	mongo mongo-main.$DPSRV_DOMAIN "$@"
+	mongo $main.$DPSRV_DOMAIN "$@"
 }
 
