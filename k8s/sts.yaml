@@ -50,6 +50,7 @@ spec:
             - name: letsencrypt-live-domain-privkey-pem
               mountPath: /etc/letsencrypt/live/domain/privkey.pem
               subPath: privkey.pem
+      enableServiceLinks: false
       imagePullSecrets:
         - name: dockerhub-dpsrv
       securityContext:
