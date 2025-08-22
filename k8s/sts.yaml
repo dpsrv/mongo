@@ -17,8 +17,7 @@ spec:
       containers:
         - name: mongodb
           image: maxfortun/private:mongodb-8
-          #command: ["mongod", "--config", "/etc/mongo/mongod.conf"]
-          command: ["sleep", "infinity"]
+          command: ["/opt/docker-entrypoint.sh"]
           ports:
             - containerPort: 27017
               name: mongodb
