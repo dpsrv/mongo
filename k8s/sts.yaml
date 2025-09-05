@@ -25,6 +25,8 @@ spec:
             - configMapRef:
                 name: dpsrv
           env:
+            - name: DPSRV_MONGO_CLUSTER
+              value: $DPSRV_REGION
             - name: MONGO_INITDB_ROOT_USERNAME
               valueFrom:
                 secretKeyRef:
