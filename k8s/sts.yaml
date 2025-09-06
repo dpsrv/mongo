@@ -27,6 +27,8 @@ spec:
           env:
             - name: DPSRV_MONGO_CLUSTER
               value: $DPSRV_REGION
+            - name: DPSRV_MONGO_TLS
+              value: 'false'
             - name: MONGO_INITDB_ROOT_USERNAME
               valueFrom:
                 secretKeyRef:

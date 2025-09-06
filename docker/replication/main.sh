@@ -9,7 +9,7 @@ host=$( echo "$conf" | jq -r '.members[] | select(.host == "'$node:27017'").host
 
 if [ -z $host ]; then
 	mongo-local --quiet --eval 'rs.initiate({
-		_id: "dpsrv", members: [ { _id: 0, host: "'"$node:27017"'", priority: 1 } ]
+		_id: "'"$DPSRV_MONGO_CLUSTER"'", members: [ { _id: 0, host: "'"$node:27017"'", priority: 1 } ]
 	})' 
 	exit 1
 fi
