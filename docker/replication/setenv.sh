@@ -36,6 +36,6 @@ function mongo-local() {
 }
 
 function mongo-main() {
-	mongo $main.$DPSRV_DOMAIN "$@"
+	mongo $main "$@"
 }
 
