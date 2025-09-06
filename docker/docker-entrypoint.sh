@@ -5,6 +5,10 @@ if [ -n "$*" ]; then
 fi
 
 cp -R /etc/mongo.init /etc/mongo
+
+. /opt/replication/setenv.sh
+cat /etc/mongo.init/mongod.conf | envsubst > /etc/mongo/mongod.conf
+
 chown -R mongodb:mongodb /etc/mongo/*
 chmod -R u=r,og= /etc/mongo/*
 
