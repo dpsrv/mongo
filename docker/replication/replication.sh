@@ -15,7 +15,7 @@ while true; do
 		continue
 	fi
 
-	host $main | grep -v NXDOMAIN | sort > /tmp/replication.host 2>/dev/null
+	getent hosts $main | sort > /tmp/replication.host 2>/dev/null
 	if diff -q /tmp/replication.host /tmp/replication.last-host 2>/dev/null; then
 		sleep 60
 		continue
