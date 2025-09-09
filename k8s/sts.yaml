@@ -5,7 +5,7 @@ metadata:
   name: mongodb
 spec:
   serviceName: mongodb
-  replicas: 1
+  replicas: 2
   selector:
     matchLabels:
       app: mongodb
@@ -14,6 +14,13 @@ spec:
       labels:
         app: mongodb
     spec:
+      affinity:
+        podAntiAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            - labelSelector:
+                matchLabels:
+                  app: mongodb
+              topologyKey: "kubernetes.io/hostname"
       containers:
         - name: mongodb
           image: maxfortun/private:mongodb-8
@@ -62,10 +69,6 @@ spec:
         #runAsGroup: 999
         #fsGroup: 999
       volumes:
-        - name: mongodb-data
-          hostPath:
-            path: /mnt/mongodb
-            type: DirectoryOrCreate
         - name: mongo-conf-mongod-conf
           secret:
             secretName: mongo-conf-mongod.conf
@@ -82,3 +85,12 @@ spec:
           secret:
             secretName: letsencrypt-live-domain-privkey.pem
             defaultMode: 0400 
+  volumeClaimTemplates:
+    - metadata:
+        name: mongodb-data
+      spec:
+        accessModes: [ "ReadWriteOnce" ]
+        resources:
+          requests:
+            storage: 100Gi
+
