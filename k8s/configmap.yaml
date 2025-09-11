@@ -1,0 +1,7 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  namespace: dpsrv
+  name: mongodb
+data:
+  MONGODB_PRIMARY: mongodb-0.mongodb.dpsrv.svc.cluster.local

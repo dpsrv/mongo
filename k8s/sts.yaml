@@ -47,6 +47,8 @@ spec:
                   name: mongo-conf-admin-password
                   key: admin-password
           volumeMounts:
+            - name: mongodb-cfg
+              mountPath: /etc/mongo/cfg
             - name: mongodb-data
               mountPath: /data/db
             - name: mongo-conf-mongod-conf
@@ -69,6 +71,9 @@ spec:
         #runAsGroup: 999
         #fsGroup: 999
       volumes:
+        - name: mongodb-cfg
+          configMap:
+            name: mongodb
         - name: mongo-conf-mongod-conf
           secret:
             secretName: mongo-conf-mongod.conf
