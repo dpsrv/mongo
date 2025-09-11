@@ -48,7 +48,7 @@ spec:
                   key: admin-password
           volumeMounts:
             - name: mongodb-cfg
-              mountPath: /etc/mongo/cfg
+              mountPath: /mnt/mongo/cfg
             - name: mongodb-data
               mountPath: /data/db
             - name: mongo-conf-mongod-conf
