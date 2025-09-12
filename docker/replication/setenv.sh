@@ -3,8 +3,8 @@ if [ -z $DPSRV_DOMAIN ]; then
 	. <( cat /proc/1/environ | tr '\0' '\n' )
 fi
 
-main=$DPSRV_MONGO_CLUSTER.$DPSRV_DOMAIN
-node=${DPSRV_REGION}-${DPSRV_NODE}.$DPSRV_DOMAIN
+main=$(cat /mnt/mongo/cfg/MONGODB_PRIMARY)
+node=$(hostname -f)
 
 #${HOSTNAME##*-}
 
