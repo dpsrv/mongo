@@ -33,7 +33,7 @@ spec:
                 name: dpsrv
           env:
             - name: DPSRV_MONGO_CLUSTER
-              value: $DPSRV_REGION-mongo
+              value: dpsrv
             - name: DPSRV_MONGO_TLS
               value: 'false'
             - name: MONGO_INITDB_ROOT_USERNAME
