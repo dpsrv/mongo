@@ -95,6 +95,7 @@ spec:
         name: mongodb-data
       spec:
         accessModes: [ "ReadWriteOnce" ]
+        storageClassName: local-storage
         resources:
           requests:
             storage: 100Gi
