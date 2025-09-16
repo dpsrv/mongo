@@ -18,6 +18,7 @@ function create_db_user() {
 }
 
 while read db user pass; do
+	[ -n "$pass" ] || continue
 	db_user=$(get_db_user $db $user)
 	if [ "$db_user" != "null" ]; then
 		echo "$db.$user exists: $db_user"
