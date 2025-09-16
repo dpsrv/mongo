@@ -2,7 +2,7 @@
 
 SWD=$(dirname $0)
 
-image=$(yq 'select(.metadata.name == "mongodb")  | .spec.template.spec.containers[] | select(.name == "mongodb") |  .image' $SWD/k8s/03-sts.yaml)
+image=$(yq 'select(.metadata.name == "mongodb")  | .spec.template.spec.containers[] | select(.name == "mongodb") |  .image' $SWD/../k8s/03-sts.yaml)
 export tag=${image##*:}
 
 docker compose build
