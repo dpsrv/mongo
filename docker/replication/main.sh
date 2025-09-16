@@ -20,3 +20,4 @@ conf=$( echo "$conf" | jq -c . | sed 's/{"$oid":"\([^"]*\)"}/ObjectId("\1")/g' )
 
 mongo-local --quiet --eval 'rs.reconfig('"$conf"')'
 
+$SWD/init-dbs.sh
