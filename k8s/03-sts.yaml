@@ -59,6 +59,9 @@ spec:
             - name: mongo-conf-dpsrv-key
               mountPath: /etc/mongo.init/dpsrv.key
               subPath: dpsrv.key
+            - name: mongo-conf-dbs
+              mountPath: /etc/mongo.init/dbs
+              subPath: dbs
             - name: letsencrypt-live-domain-cert-pem
               mountPath: /etc/letsencrypt/live/domain/cert.pem
               subPath: cert.pem
@@ -83,6 +86,10 @@ spec:
         - name: mongo-conf-dpsrv-key
           secret:
             secretName: mongo-conf-dpsrv.key
+            defaultMode: 0400 
+        - name: mongo-conf-dbs
+          secret:
+            secretName: mongo-conf-dbs
             defaultMode: 0400 
         - name: letsencrypt-live-domain-cert-pem
           secret:
