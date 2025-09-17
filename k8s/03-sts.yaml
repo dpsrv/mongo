@@ -81,11 +81,11 @@ spec:
             name: mongodb
         - name: mongo-conf-mongod-conf
           secret:
-            secretName: mongo-conf-mongod.conf
+            secretName: mongo-conf-mongod-conf
             defaultMode: 0400 
         - name: mongo-conf-dpsrv-key
           secret:
-            secretName: mongo-conf-dpsrv.key
+            secretName: mongo-conf-dpsrv-key
             defaultMode: 0400 
         - name: mongo-conf-dbs
           secret:
@@ -93,11 +93,11 @@ spec:
             defaultMode: 0400 
         - name: letsencrypt-live-domain-cert-pem
           secret:
-            secretName: letsencrypt-live-domain-cert.pem
+            secretName: letsencrypt-live-domain-cert-pem
             defaultMode: 0400 
         - name: letsencrypt-live-domain-privkey-pem
           secret:
-            secretName: letsencrypt-live-domain-privkey.pem
+            secretName: letsencrypt-live-domain-privkey-pem
             defaultMode: 0400 
   volumeClaimTemplates:
     - metadata:
