@@ -16,6 +16,7 @@ spec:
     spec:
       nodeSelector:
         DPSRV_REGION: cnt-use1
+        #kubernetes.io/hostname: cnt-use1-1
       affinity:
         podAntiAffinity:
           requiredDuringSchedulingIgnoredDuringExecution:
