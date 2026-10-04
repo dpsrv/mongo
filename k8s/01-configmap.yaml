@@ -5,3 +5,6 @@ metadata:
   name: mongodb
 data:
   MONGODB_PRIMARY: mongodb-0.mongodb.dpsrv.svc.cluster.local
+  # MANUAL: MONGODB_PRIMARY is the only electable member
+  # AUTO:   all members are electable, MONGODB_PRIMARY only bootstraps the replica set
+  MONGODB_REPLICATION_MODE: MANUAL

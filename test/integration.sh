@@ -3,7 +3,8 @@
 # Replication integration tests.
 #
 # Brings up a number of mongodb nodes in docker, running the same entrypoint and
-# replication scripts as the k8s statefulset, then shifts the main node between them.
+# replication scripts as the k8s statefulset, then shifts the main node between them in MANUAL
+# mode, and fails nodes over in AUTO mode.
 #
 # Usage: test/integration.sh [test ...]
 #
@@ -21,10 +22,12 @@ PREFIX=dpsrv-mongo-test
 DOMAIN=mongodb.test
 CLUSTER=dpsrv
 INTERVAL=3
+REMOVE_AFTER=15
 TIMEOUT=${TIMEOUT:-120}
 WORK=$(mktemp -d /tmp/$PREFIX.XXXXXX)
 
-ALL_TESTS="bootstrap replicates_writes creates_users shift_main offline_online restart_secondary restart_main scale_up upgrade"
+ALL_TESTS="bootstrap replicates_writes creates_users shift_main offline_online restart_secondary restart_main scale_up mode_switch
+	auto_bootstrap auto_failover auto_offline_primary auto_scale_up auto_remove_dead upgrade"
 TESTS=${*:-$ALL_TESTS}
 
 [ $NODES -ge 3 ] || { echo "NODES must be at least 3"; exit 1; }
@@ -94,11 +97,12 @@ function start_node() {
 	docker rm -f $(container $i) >/dev/null 2>&1 || true
 	docker volume create --label $PREFIX $PREFIX-data-$i >/dev/null
 	docker run -d --label $PREFIX --name $(container $i) \
-		--network $PREFIX --hostname $(host $i) --network-alias $(host $i) \
+		--network $PREFIX --hostname $(host $i) --network-alias $(host $i) --network-alias $DOMAIN \
 		-e DPSRV_DOMAIN=$DOMAIN \
 		-e DPSRV_MONGO_CLUSTER=$CLUSTER \
 		-e DPSRV_MONGO_TLS=false \
 		-e DPSRV_MONGO_REPLICATION_INTERVAL=$INTERVAL \
+		-e DPSRV_MONGO_REMOVE_AFTER=$REMOVE_AFTER \
 		-e MONGO_INITDB_ROOT_USERNAME=admin \
 		-e MONGO_INITDB_ROOT_PASSWORD=secret \
 		-v $WORK/cfg:/mnt/mongo/cfg:ro \
@@ -124,6 +128,11 @@ function remove_node() {
 # Equivalent of editing MONGODB_PRIMARY in the k8s configmap
 function set_main() {
 	echo $(host $1) > $WORK/cfg/MONGODB_PRIMARY
+}
+
+# Equivalent of editing MONGODB_REPLICATION_MODE in the k8s configmap
+function set_mode() {
+	echo $1 > $WORK/cfg/MONGODB_REPLICATION_MODE
 }
 
 # msh <ordinal> <js>
@@ -193,14 +202,67 @@ function wait_for_cluster() {
 	done
 }
 
+# Ordinal of the primary as seen by node <i>, empty if there is none
+function primary() {
+	msh $1 'const p = db.hello().primary; p ? p.replace(/^mongodb-(\d+)\..*/, "$1") : ""'
+}
+
+# Prints "yes" once node <i> sees a primary other than <old>
+function primary_is_not() {
+	local p=$(primary $1)
+	[ -n "$p" ] && [ "$p" != "$2" ] && echo yes
+}
+
+function healthy() {
+	msh $1 '["PRIMARY", "SECONDARY"].includes(rs.status().members.find(m => m.self).stateStr)'
+}
+
+# All members with priority 1, e.g. "0:1 1:1 2:1", optionally without <except>
+function electable_members() {
+	local i
+	local count=$1
+	local except=$2
+	local out=()
+	for (( i = 0; i < count; i++ )); do
+		[ "$i" = "$except" ] || out+=("$i:1")
+	done
+	echo "${out[*]}"
+}
+
+# Waits until <count> nodes are electable members with a primary, as seen by node <i>
+function wait_for_auto_cluster() {
+	local i
+	local seen_by=$1
+	local count=${2:-$NODES}
+	wait_for "all members electable" "$(electable_members $count)" members $seen_by
+	wait_for "a primary" yes primary_is_not $seen_by none
+	for (( i = 0; i < count; i++ )); do
+		wait_for "node $i is healthy" true healthy $i
+	done
+}
+
+# start_cluster [image tag] [mode]
 function start_cluster() {
 	local i
 	local tag=$1
+	local mode=${2:-MANUAL}
 	set_main 0
+	set_mode $mode
 	for (( i = 0; i < NODES; i++ )); do
 		start_node $i $tag
 	done
-	wait_for_cluster 0
+	if [ $mode = AUTO ]; then
+		wait_for_auto_cluster 0
+	else
+		wait_for_cluster 0
+	fi
+}
+
+function remove_all_nodes() {
+	local i
+	for (( i = 0; i <= NODES; i++ )); do
+		remove_node $i
+	done
 }
 
 function write_doc() {
@@ -294,11 +356,73 @@ function test_scale_up() {
 }
 
 # Rolling upgrade from FROM_VERSION, the same order the statefulset uses: highest ordinal first
+function test_mode_switch() {
+	log "Switching to AUTO"
+	set_mode AUTO
+	wait_for_auto_cluster 0
+	local p=$(primary 0)
+	assert_eq "write in AUTO" true "$(write_doc $p mode-auto)"
+	assert_doc_everywhere mode-auto
+
+	log "Switching to MANUAL with node 1 as main"
+	set_main 1
+	set_mode MANUAL
+	wait_for_cluster 1
+	assert_eq "write in MANUAL" true "$(write_doc 1 mode-manual)"
+	assert_doc_everywhere mode-manual
+}
+
+function test_auto_bootstrap() {
+	remove_all_nodes
+	start_cluster default AUTO
+	assert_eq "bootstrap node is primary" 0 "$(primary 1)"
+	assert_eq "write on primary" true "$(write_doc 0 auto)"
+	assert_doc_everywhere auto
+	assert_eq "app1user" app1user "$(msh 0 'db.getSiblingDB("app1").getUser("app1user")?.user')"
+}
+
+function test_auto_failover() {
+	local old=$(primary 0)
+	local other=$(( (old + 1) % NODES ))
+	log "Stopping primary node $old"
+	stop_node $old
+	wait_for "new primary elected" yes primary_is_not $other $old
+	local new=$(primary $other)
+	assert_eq "write on new primary $new" true "$(write_doc $new failover)"
+
+	docker start $(container $old) >/dev/null
+	wait_for_auto_cluster $new
+	assert_doc_everywhere failover
+}
+
+function test_auto_offline_primary() {
+	local old=$(primary 0)
+	docker exec $(container $old) touch /tmp/replication.offline
+	wait_for "primary $old stepped down and removed" "$(electable_members $NODES $old)" members $(( (old + 1) % NODES ))
+
+	docker exec $(container $old) rm /tmp/replication.offline
+	wait_for_auto_cluster $(( (old + 1) % NODES ))
+	assert_doc_everywhere failover
+}
+
+function test_auto_scale_up() {
+	start_node $NODES
+	wait_for_auto_cluster 0 $(( NODES + 1 ))
+	assert_doc_everywhere failover $(( NODES + 1 ))
+}
+
+# Scale down: the pod and its volume go away for good
+function test_auto_remove_dead() {
+	remove_node $NODES
+	wait_for "node $NODES removed after ${REMOVE_AFTER}s" "$(electable_members $NODES)" members 0
+	local p=$(primary 0)
+	assert_eq "write after removal" true "$(write_doc $p removed)"
+	assert_doc_everywhere removed
+}
+
 function test_upgrade() {
 	local i
-	for (( i = 0; i <= NODES; i++ )); do
-		remove_node $i
-	done
+	remove_all_nodes
 
 	build_image $FROM_VERSION
 	start_cluster $FROM_VERSION

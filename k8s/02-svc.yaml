@@ -10,5 +10,6 @@ spec:
     - port: 27017
       name: mongodb
   clusterIP: None # headless service for StatefulSet
+  publishNotReadyAddresses: true # peers can discover each other before they are ready
   selector:
     app: mongodb

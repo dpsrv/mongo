@@ -27,6 +27,10 @@ while true; do
 
 	if [ -f /tmp/replication.offline ]; then
 		$SWD/offline.sh 2>&1 | log || true
+	elif [ "$mode" = "AUTO" ]; then
+		$SWD/auto.sh 2>&1 | log || true
+	elif [ "$mode" != "MANUAL" ]; then
+		echo "Unknown replication mode $mode, expected MANUAL or AUTO" | log
 	elif [ -z "$main" ]; then
 		:
 	elif getent hosts $main | grep -qwF "$node"; then
