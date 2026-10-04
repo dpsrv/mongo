@@ -3,7 +3,7 @@ if [ -z $DPSRV_DOMAIN ]; then
 	. <( cat /proc/1/environ | tr '\0' '\n' )
 fi
 
-main=$(cat /mnt/mongo/cfg/MONGODB_PRIMARY)
+main=$(cat /mnt/mongo/cfg/MONGODB_PRIMARY 2>/dev/null || true)
 node=$(hostname -f)
 
 #${HOSTNAME##*-}
@@ -30,7 +30,8 @@ function mongo() {
 	fi
 	shift
 	uri="mongodb://$MONGO_INITDB_ROOT_USERNAME:$MONGO_INITDB_ROOT_PASSWORD@$host:27017/admin?tls=$DPSRV_MONGO_TLS&tlsInsecure=true&tlsCertificateKeyFile=/etc/mongo/cert.pem"
-	mongosh "$uri" "$@"
+	# Keep mongosh state out of /data/db, the image entrypoint needs it owned by mongodb
+	HOME=/root mongosh "$uri" "$@"
 }
 
 function mongo-local() {

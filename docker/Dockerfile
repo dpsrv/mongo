@@ -1,4 +1,5 @@
-FROM mongo:8.0.3
+ARG MONGO_VERSION=9.0.2
+FROM mongo:${MONGO_VERSION}
 
 RUN apt update \
 	&& apt install -y dnsutils vim gettext \
